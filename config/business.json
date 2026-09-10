@@ -1,0 +1,24 @@
+{
+  "_doc": "Datos de negocio de Monkits usados en los textos de los bots y en la lógica de seguimiento. No son secretos. Las URLs también viven en .env (MONKITS_STORE_URL / MONKITS_WEBSITE_URL) para el código.",
+  "store_url": "https://monkits.com",
+  "website_url": "https://monkits.com",
+  "whatsapp": {
+    "type": "api_oficial",
+    "note": "Ventana de 24h: fuera de ella solo se pueden enviar plantillas aprobadas en Meta. Seguimientos > 24h requieren plantilla de WhatsApp (MANUAL_REQUIRED en Meta/Kommo)."
+  },
+  "talleres_nota": "Talleres/cursos SOLO presenciales en la sucursal Monkits. No hay en línea, ni a domicilio, ni en la escuela del cliente.",
+  "payments": {
+    "publico": "checkout online en monkits.com",
+    "mayoreo": "transferencia (coordinada por vendedor)",
+    "distribuidor": "transferencia (coordinada por vendedor)",
+    "franquicia": "transferencia (coordinada por asesor)",
+    "talleres": "transferencia (coordinada por asesor)"
+  },
+  "horario_atencion": {
+    "zona": "America/Mexico_City",
+    "lun_vie": "10:00-18:00",
+    "sab": "10:00-14:00",
+    "dom": "cerrado",
+    "texto_fuera_horario": "Nuestro horario de atención es L-V de 10:00 a 18:00 y sábados de 10:00 a 14:00. Te contactaremos en cuanto abramos."
+  }
+}

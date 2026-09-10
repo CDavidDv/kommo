@@ -1,0 +1,51 @@
+[
+  {
+    "question": [
+      { "handler": "show", "params": { "type": "text", "value": "¡Perfecto! Aquí puedes ver todos los kits y comprar directamente: https://monkits.com" } },
+      { "handler": "action", "params": { "name": "set_custom_fields", "params": { "type": 2, "custom_fields_id": "@field:MK_ESTADO_COMERCIAL", "value": "INFO_ENVIADA" } } },
+      { "handler": "action", "params": { "name": "set_tag", "params": { "type": 2, "value": "SEGUIMIENTO" } } },
+      { "handler": "action", "params": { "name": "change_status", "params": { "value": "@stage:publico/tienda_enviada" } } }
+    ]
+  },
+  {
+    "question": [
+      { "handler": "show", "params": { "type": "buttons", "value": "¿Te ayudo con algo más?", "buttons": ["Tengo una duda", "Quiero hablar con un asesor", "Todo claro, gracias"] } }
+    ],
+    "answer": [
+      {
+        "handler": "buttons",
+        "params": [
+          {
+            "value": "Tengo una duda",
+            "params": [
+              { "handler": "show", "params": { "type": "text", "value": "Escríbeme tu duda y un asesor te responde a la brevedad." } },
+              { "handler": "action", "params": { "name": "set_tag", "params": { "type": 2, "value": "ASESOR_REQUERIDO" } } },
+              { "handler": "action", "params": { "name": "change_status", "params": { "value": "@stage:publico/en_seguimiento" } } }
+            ]
+          },
+          {
+            "value": "Quiero hablar con un asesor",
+            "params": [
+              { "handler": "show", "params": { "type": "text", "value": "Perfecto, un asesor continúa por aquí. Nuestro horario es L-V 10:00-18:00 y sábados 10:00-14:00." } },
+              { "handler": "action", "params": { "name": "set_tag", "params": { "type": 2, "value": "ASESOR_REQUERIDO" } } },
+              { "handler": "action", "params": { "name": "change_status", "params": { "value": "@stage:publico/conversacion_humana" } } }
+            ]
+          },
+          {
+            "value": "Todo claro, gracias",
+            "params": [
+              { "handler": "show", "params": { "type": "text", "value": "¡Genial! Cualquier cosa, aquí estamos. 🤖" } },
+              { "handler": "action", "params": { "name": "change_status", "params": { "value": "@stage:publico/en_seguimiento" } } }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "finish": [
+      { "handler": "action", "params": { "name": "unset_tag", "params": { "type": 2, "value": "BOT_ATENDIENDO" } } },
+      { "handler": "stop", "params": { "action": "talk-close" } }
+    ]
+  }
+]

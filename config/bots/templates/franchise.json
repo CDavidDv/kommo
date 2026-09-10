@@ -1,0 +1,85 @@
+[
+  {
+    "question": [
+      { "handler": "show", "params": { "type": "text", "value": "El modelo de franquicia Monkits te permite llevar productos y talleres de robótica a escuelas bajo el concepto y nombre de Monkits, según las condiciones que la empresa define. Es un proyecto de alto valor y lo ve un asesor especializado." } }
+    ]
+  },
+  {
+    "question": [ { "handler": "show", "params": { "type": "text", "value": "¿Representas a una persona, empresa u organización? Dime el nombre." } } ],
+    "answer": [ { "handler": "action", "params": { "name": "set_custom_fields", "params": { "type": 2, "custom_fields_id": "@field:MK_NOMBRE_ORG", "value": "{{message}}" } } } ]
+  },
+  {
+    "question": [ { "handler": "show", "params": { "type": "text", "value": "¿En qué ciudad y estado te interesa operar?" } } ],
+    "answer": [ { "handler": "action", "params": { "name": "set_custom_fields", "params": { "type": 2, "custom_fields_id": "@field:MK_CIUDAD", "value": "{{message}}" } } } ]
+  },
+  {
+    "question": [
+      { "handler": "show", "params": { "type": "buttons", "value": "¿Te interesa llevar Monkits a escuelas?", "buttons": ["Sí", "No"] } }
+    ],
+    "answer": [
+      {
+        "handler": "buttons",
+        "params": [
+          { "value": "Sí", "params": [ { "handler": "action", "params": { "name": "set_custom_fields", "params": { "type": 2, "custom_fields_id": "@field:MK_INTERES_ESCUELAS", "value": "1" } } } ] },
+          { "value": "No", "params": [ { "handler": "action", "params": { "name": "set_custom_fields", "params": { "type": 2, "custom_fields_id": "@field:MK_INTERES_ESCUELAS", "value": "0" } } } ] }
+        ]
+      }
+    ]
+  },
+  {
+    "question": [
+      { "handler": "show", "params": { "type": "buttons", "value": "¿Te interesa impartir talleres de robótica?", "buttons": ["Sí", "No"] } }
+    ],
+    "answer": [
+      {
+        "handler": "buttons",
+        "params": [
+          { "value": "Sí", "params": [ { "handler": "action", "params": { "name": "set_custom_fields", "params": { "type": 2, "custom_fields_id": "@field:MK_INTERES_TALLERES", "value": "1" } } } ] },
+          { "value": "No", "params": [ { "handler": "action", "params": { "name": "set_custom_fields", "params": { "type": 2, "custom_fields_id": "@field:MK_INTERES_TALLERES", "value": "0" } } } ] }
+        ]
+      }
+    ]
+  },
+  {
+    "question": [
+      { "handler": "show", "params": { "type": "buttons", "value": "¿Tienes experiencia en educación o emprendiendo?", "buttons": ["Ninguna", "Poca", "Media", "Alta"] } }
+    ],
+    "answer": [
+      {
+        "handler": "buttons",
+        "params": [
+          { "value": "Ninguna", "params": [ { "handler": "action", "params": { "name": "set_custom_fields", "params": { "type": 2, "custom_fields_id": "@field:MK_EXPERIENCIA_COMERCIAL", "value": "NINGUNA" } } } ] },
+          { "value": "Poca", "params": [ { "handler": "action", "params": { "name": "set_custom_fields", "params": { "type": 2, "custom_fields_id": "@field:MK_EXPERIENCIA_COMERCIAL", "value": "POCA" } } } ] },
+          { "value": "Media", "params": [ { "handler": "action", "params": { "name": "set_custom_fields", "params": { "type": 2, "custom_fields_id": "@field:MK_EXPERIENCIA_COMERCIAL", "value": "MEDIA" } } } ] },
+          { "value": "Alta", "params": [ { "handler": "action", "params": { "name": "set_custom_fields", "params": { "type": 2, "custom_fields_id": "@field:MK_EXPERIENCIA_COMERCIAL", "value": "ALTA" } } } ] }
+        ]
+      }
+    ]
+  },
+  {
+    "question": [ { "handler": "show", "params": { "type": "text", "value": "Déjame un teléfono y un correo para que el asesor especializado te contacte." } } ],
+    "answer": [
+      {
+        "handler": "preset",
+        "params": {
+          "name": "contacts.validate_base_info",
+          "params": {
+            "empty_email": "Me falta tu correo, ¿me lo compartes?",
+            "empty_phone": "Me falta tu teléfono, ¿me lo compartes?",
+            "success": "¡Listo, gracias!"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "finish": [
+      { "handler": "action", "params": { "name": "set_custom_fields", "params": { "type": 2, "custom_fields_id": "@field:MK_ESTADO_COMERCIAL", "value": "DATOS_RECOPILADOS" } } },
+      { "handler": "action", "params": { "name": "set_tag", "params": { "type": 2, "value": "ASESOR_REQUERIDO" } } },
+      { "handler": "action", "params": { "name": "unset_tag", "params": { "type": 2, "value": "BOT_ATENDIENDO" } } },
+      { "handler": "show", "params": { "type": "text", "value": "¡Gracias! Un asesor especializado te contactará muy pronto para presentarte el modelo a detalle. Horario: L-V 10:00-18:00, sábados 10:00-14:00." } },
+      { "handler": "action", "params": { "name": "change_status", "params": { "value": "@stage:franquicia/datos_recopilados" } } },
+      { "handler": "stop", "params": { "action": "talk-close" } }
+    ]
+  }
+]

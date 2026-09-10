@@ -1,0 +1,41 @@
+[
+  {
+    "question": [
+      { "handler": "show", "params": { "type": "text", "value": "¡Genial que te interese un taller o curso de robótica Monkits! Los talleres son presenciales en nuestra sucursal. Te hago unas preguntas rápidas y un asesor confirma cupo, precio y fecha." } }
+    ]
+  },
+  {
+    "question": [ { "handler": "show", "params": { "type": "text", "value": "¿Qué taller o curso te interesa, y para qué fechas? Cuéntame también las edades de los participantes." } } ],
+    "answer": [ { "handler": "action", "params": { "name": "set_custom_fields", "params": { "type": 2, "custom_fields_id": "@field:MK_TALLER_DETALLE", "value": "{{message}}" } } } ]
+  },
+  {
+    "question": [ { "handler": "show", "params": { "type": "text", "value": "¿Cuántos participantes serían?" } } ],
+    "answer": [ { "handler": "action", "params": { "name": "set_custom_fields", "params": { "type": 2, "custom_fields_id": "@field:MK_NUM_PARTICIPANTES", "value": "{{message}}" } } } ]
+  },
+  {
+    "question": [ { "handler": "show", "params": { "type": "text", "value": "Por último, déjame un teléfono y un correo para confirmarte los detalles." } } ],
+    "answer": [
+      {
+        "handler": "preset",
+        "params": {
+          "name": "contacts.validate_base_info",
+          "params": {
+            "empty_email": "Me falta tu correo, ¿me lo compartes?",
+            "empty_phone": "Me falta tu teléfono, ¿me lo compartes?",
+            "success": "¡Listo, gracias!"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "finish": [
+      { "handler": "action", "params": { "name": "set_custom_fields", "params": { "type": 2, "custom_fields_id": "@field:MK_ESTADO_COMERCIAL", "value": "DATOS_RECOPILADOS" } } },
+      { "handler": "action", "params": { "name": "set_tag", "params": { "type": 2, "value": "ASESOR_REQUERIDO" } } },
+      { "handler": "action", "params": { "name": "unset_tag", "params": { "type": 2, "value": "BOT_ATENDIENDO" } } },
+      { "handler": "show", "params": { "type": "text", "value": "¡Gracias! Un asesor te confirma cupo, precio y fecha en nuestra sucursal, y coordina el pago (por transferencia). Horario: L-V 10:00-18:00, sábados 10:00-14:00." } },
+      { "handler": "action", "params": { "name": "change_status", "params": { "value": "@stage:talleres/datos_inscripcion" } } },
+      { "handler": "stop", "params": { "action": "talk-close" } }
+    ]
+  }
+]

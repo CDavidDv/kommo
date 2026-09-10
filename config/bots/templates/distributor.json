@@ -1,0 +1,82 @@
+[
+  {
+    "question": [
+      { "handler": "show", "params": { "type": "text", "value": "¡Gracias por tu interés en distribuir Monkits! Cuéntame un poco de tu negocio para evaluar la mejor forma de trabajar juntos." } }
+    ]
+  },
+  {
+    "question": [ { "handler": "show", "params": { "type": "text", "value": "¿Cómo se llama tu negocio?" } } ],
+    "answer": [ { "handler": "action", "params": { "name": "set_custom_fields", "params": { "type": 2, "custom_fields_id": "@field:MK_NOMBRE_ORG", "value": "{{message}}" } } } ]
+  },
+  {
+    "question": [
+      { "handler": "show", "params": { "type": "buttons", "value": "¿Qué tipo de negocio es?", "buttons": ["Tienda de retail", "Escuela privada", "Empresa", "Particular / emprendedor", "Otro"] } }
+    ],
+    "answer": [
+      {
+        "handler": "buttons",
+        "params": [
+          { "value": "Tienda de retail", "params": [ { "handler": "action", "params": { "name": "set_custom_fields", "params": { "type": 2, "custom_fields_id": "@field:MK_TIPO_INSTITUCION", "value": "NEGOCIO_RETAIL" } } } ] },
+          { "value": "Escuela privada", "params": [ { "handler": "action", "params": { "name": "set_custom_fields", "params": { "type": 2, "custom_fields_id": "@field:MK_TIPO_INSTITUCION", "value": "ESCUELA_PRIVADA" } } } ] },
+          { "value": "Empresa", "params": [ { "handler": "action", "params": { "name": "set_custom_fields", "params": { "type": 2, "custom_fields_id": "@field:MK_TIPO_INSTITUCION", "value": "EMPRESA" } } } ] },
+          { "value": "Particular / emprendedor", "params": [ { "handler": "action", "params": { "name": "set_custom_fields", "params": { "type": 2, "custom_fields_id": "@field:MK_TIPO_INSTITUCION", "value": "PARTICULAR" } } } ] },
+          { "value": "Otro", "params": [ { "handler": "action", "params": { "name": "set_custom_fields", "params": { "type": 2, "custom_fields_id": "@field:MK_TIPO_INSTITUCION", "value": "OTRO" } } } ] }
+        ]
+      }
+    ]
+  },
+  {
+    "question": [ { "handler": "show", "params": { "type": "text", "value": "¿En qué ciudad y estado opera?" } } ],
+    "answer": [ { "handler": "action", "params": { "name": "set_custom_fields", "params": { "type": 2, "custom_fields_id": "@field:MK_CIUDAD", "value": "{{message}}" } } } ]
+  },
+  {
+    "question": [ { "handler": "show", "params": { "type": "text", "value": "¿Por qué canales vendes? (tienda física, online, marketplace, redes, eventos...)" } } ],
+    "answer": [ { "handler": "action", "params": { "name": "set_custom_fields", "params": { "type": 2, "custom_fields_id": "@field:MK_INTERES", "value": "{{message}}" } } } ]
+  },
+  {
+    "question": [ { "handler": "show", "params": { "type": "text", "value": "¿Qué volumen aproximado de kits manejarías al inicio?" } } ],
+    "answer": [ { "handler": "action", "params": { "name": "set_custom_fields", "params": { "type": 2, "custom_fields_id": "@field:MK_CANTIDAD_KITS", "value": "{{message}}" } } } ]
+  },
+  {
+    "question": [
+      { "handler": "show", "params": { "type": "buttons", "value": "¿Tienes experiencia vendiendo productos educativos o similares?", "buttons": ["Ninguna", "Poca", "Media", "Alta"] } }
+    ],
+    "answer": [
+      {
+        "handler": "buttons",
+        "params": [
+          { "value": "Ninguna", "params": [ { "handler": "action", "params": { "name": "set_custom_fields", "params": { "type": 2, "custom_fields_id": "@field:MK_EXPERIENCIA_COMERCIAL", "value": "NINGUNA" } } } ] },
+          { "value": "Poca", "params": [ { "handler": "action", "params": { "name": "set_custom_fields", "params": { "type": 2, "custom_fields_id": "@field:MK_EXPERIENCIA_COMERCIAL", "value": "POCA" } } } ] },
+          { "value": "Media", "params": [ { "handler": "action", "params": { "name": "set_custom_fields", "params": { "type": 2, "custom_fields_id": "@field:MK_EXPERIENCIA_COMERCIAL", "value": "MEDIA" } } } ] },
+          { "value": "Alta", "params": [ { "handler": "action", "params": { "name": "set_custom_fields", "params": { "type": 2, "custom_fields_id": "@field:MK_EXPERIENCIA_COMERCIAL", "value": "ALTA" } } } ] }
+        ]
+      }
+    ]
+  },
+  {
+    "question": [ { "handler": "show", "params": { "type": "text", "value": "Déjame un teléfono y un correo para que un asesor te contacte." } } ],
+    "answer": [
+      {
+        "handler": "preset",
+        "params": {
+          "name": "contacts.validate_base_info",
+          "params": {
+            "empty_email": "Me falta tu correo, ¿me lo compartes?",
+            "empty_phone": "Me falta tu teléfono, ¿me lo compartes?",
+            "success": "¡Listo, gracias!"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "finish": [
+      { "handler": "action", "params": { "name": "set_custom_fields", "params": { "type": 2, "custom_fields_id": "@field:MK_ESTADO_COMERCIAL", "value": "DATOS_RECOPILADOS" } } },
+      { "handler": "action", "params": { "name": "set_tag", "params": { "type": 2, "value": "ASESOR_REQUERIDO" } } },
+      { "handler": "action", "params": { "name": "unset_tag", "params": { "type": 2, "value": "BOT_ATENDIENDO" } } },
+      { "handler": "show", "params": { "type": "text", "value": "¡Gracias! Un asesor revisará la información y te contactará para hablar de condiciones de distribución. Horario: L-V 10:00-18:00, sábados 10:00-14:00." } },
+      { "handler": "action", "params": { "name": "change_status", "params": { "value": "@stage:distribuidor/datos_negocio" } } },
+      { "handler": "stop", "params": { "action": "talk-close" } }
+    ]
+  }
+]

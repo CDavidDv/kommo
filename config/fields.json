@@ -53,10 +53,6 @@
 
       { "code": "MK_TALLER_DETALLE", "name": "Inscripción: taller/curso, fechas y edades", "type": "textarea", "group": "mk_talleres", "enabled": true },
       { "code": "MK_NUM_PARTICIPANTES", "name": "Nº de participantes", "type": "numeric", "group": "mk_talleres", "enabled": true },
-      {
-        "code": "MK_MODALIDAD", "name": "Modalidad del taller", "type": "select", "group": "mk_talleres", "enabled": true,
-        "enums": ["PRESENCIAL_SEDE", "EN_ESCUELA", "A_DOMICILIO", "EN_LINEA"]
-      },
 
       { "code": "MK_PRESUPUESTO_APROX", "name": "Presupuesto aproximado (MXN)", "type": "numeric", "group": "mk_datos", "enabled": false },
       { "code": "MK_PROXIMO_SEGUIMIENTO", "name": "Próximo seguimiento", "type": "date", "group": "mk_seguimiento", "enabled": false },
