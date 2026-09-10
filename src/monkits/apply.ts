@@ -70,16 +70,10 @@ export async function applyConfig(
         res.created.push(`pipeline ${p.name} (id ${created.id})`);
         log(`  + pipeline ${p.name} (id ${created.id}) + ${statuses.length} stages`);
       });
-      // rename system stages 142/143 on the fresh pipeline
-      const pid = pipelineId.get(p.key);
-      if (pid) {
-        for (const s of p.stages.filter((x) => x.system)) {
-          await step(`rename stage ${s.system} → "${s.name}"`, async () => {
-            await client.patch(`/leads/pipelines/${pid}/statuses/${s.system}`, { name: s.name });
-            res.updated.push(`stage ${p.name} › ${s.name}`);
-            log(`  ~ stage ${p.name} › ${s.name}`);
-          });
-        }
+      // System stages 142/143 keep Kommo's default names — the API rejects renaming
+      // them (400). Rename in the Kommo UI if desired.
+      for (const s of p.stages.filter((x) => x.system)) {
+        res.skipped.push(`stage ${p.name} › ${s.name} (system ${s.system} — rename in UI)`);
       }
       continue;
     }
