@@ -12,8 +12,10 @@ tareas y webhooks. Salesbots y Digital Pipeline se documentan como pasos manuale
 - [x] FASE 3 — config declarativa: `config/pipelines.json`, `fields.json`, `tags.json`, `bots/*.json`, `automations.json`
 - [x] FASE 4 — arquitectura aprobada: **5 pipelines** (`docs/ARCHITECTURE.md`)
 - [x] FASE 14 (parcial) — `npm run install:monkits -- --dry-run` funcionando
-- [ ] Aplicar: `npm run install:monkits -- --apply`  (pendiente tu OK)
-- [ ] FASE 7-11 — escenarios Salesbot · FASE 12-13 — Digital Pipeline + canales (manual)
+- [x] Aplicado en Kommo: 5 pipelines, 13 campos agrupados, 11 etiquetas (santilop357)
+- [~] FASE 7 — Salesbot bienvenida: JSON listo (`config/bots/kommo/`), pegar en UI → `docs/SALESBOT-SETUP.md`
+- [ ] FASE 8-11 — bots de flujo · FASE 12-13 — Digital Pipeline + canales (manual)
+- [ ] Manual UI: renombrar etapas won/lost de los 5 pipelines
 
 ## Requisitos
 

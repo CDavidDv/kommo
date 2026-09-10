@@ -1,0 +1,15 @@
+[
+  {
+    "question": [
+      {
+        "handler": "show",
+        "params": { "type": "text", "value": "Test Monkits: el bot está activo ✅" }
+      }
+    ]
+  },
+  {
+    "finish": [
+      { "handler": "stop", "params": { "action": "talk-close" } }
+    ]
+  }
+]
