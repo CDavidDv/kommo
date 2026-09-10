@@ -4,7 +4,7 @@ import { loadConfig, ALLOWED_STAGE_COLORS, ALLOWED_TAG_COLORS } from "../src/con
 describe("config/*.json", () => {
   it("loads and validates", async () => {
     const c = await loadConfig();
-    expect(c.pipelines).toHaveLength(5);
+    expect(c.pipelines).toHaveLength(6);
   });
 
   it("every pipeline has system 142 and 143", async () => {

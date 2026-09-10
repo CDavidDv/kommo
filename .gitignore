@@ -20,6 +20,9 @@ docs/current-account.json
 docs/current-account.md
 docs/audit/
 
+# Compiled Salesbot JSON — generated per-account by `npm run bots:compile`
+config/bots/kommo/
+
 # OS / editor
 .DS_Store
 Thumbs.db

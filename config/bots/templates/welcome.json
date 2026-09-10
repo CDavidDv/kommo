@@ -1,0 +1,81 @@
+[
+  {
+    "question": [
+      { "handler": "action", "params": { "name": "set_tag", "params": { "type": 2, "value": "NUEVO_LEAD" } } },
+      { "handler": "action", "params": { "name": "set_tag", "params": { "type": 2, "value": "BOT_ATENDIENDO" } } },
+      { "handler": "action", "params": { "name": "change_status", "params": { "value": "@stage:recepcion/esperando_eleccion" } } },
+      {
+        "handler": "show",
+        "params": {
+          "type": "buttons",
+          "value": "Hola, gracias por contactar a Monkits. Para ayudarte mejor, ¿qué estás buscando?",
+          "buttons": [
+            "Comprar kits",
+            "Comprar por mayoreo",
+            "Distribuir Monkits",
+            "Llevar Monkits a escuelas / franquicia",
+            "Inscribirme a un taller o curso"
+          ]
+        }
+      }
+    ],
+    "answer": [
+      {
+        "handler": "buttons",
+        "params": [
+          {
+            "value": "Comprar kits",
+            "params": [
+              { "handler": "action", "params": { "name": "set_custom_fields", "params": { "type": 2, "custom_fields_id": "@field:MK_TIPO_CLIENTE", "value": "PUBLICO" } } },
+              { "handler": "action", "params": { "name": "set_custom_fields", "params": { "type": 2, "custom_fields_id": "@field:MK_ESTADO_COMERCIAL", "value": "NUEVO" } } },
+              { "handler": "action", "params": { "name": "set_tag", "params": { "type": 2, "value": "PUBLICO" } } },
+              { "handler": "action", "params": { "name": "change_status", "params": { "value": "@stage:publico/nuevo" } } }
+            ]
+          },
+          {
+            "value": "Comprar por mayoreo",
+            "params": [
+              { "handler": "action", "params": { "name": "set_custom_fields", "params": { "type": 2, "custom_fields_id": "@field:MK_TIPO_CLIENTE", "value": "MAYOREO" } } },
+              { "handler": "action", "params": { "name": "set_custom_fields", "params": { "type": 2, "custom_fields_id": "@field:MK_ESTADO_COMERCIAL", "value": "NUEVO" } } },
+              { "handler": "action", "params": { "name": "set_tag", "params": { "type": 2, "value": "MAYOREO" } } },
+              { "handler": "action", "params": { "name": "change_status", "params": { "value": "@stage:mayoreo/nuevo" } } }
+            ]
+          },
+          {
+            "value": "Distribuir Monkits",
+            "params": [
+              { "handler": "action", "params": { "name": "set_custom_fields", "params": { "type": 2, "custom_fields_id": "@field:MK_TIPO_CLIENTE", "value": "DISTRIBUIDOR" } } },
+              { "handler": "action", "params": { "name": "set_custom_fields", "params": { "type": 2, "custom_fields_id": "@field:MK_ESTADO_COMERCIAL", "value": "NUEVO" } } },
+              { "handler": "action", "params": { "name": "set_tag", "params": { "type": 2, "value": "DISTRIBUIDOR" } } },
+              { "handler": "action", "params": { "name": "change_status", "params": { "value": "@stage:distribuidor/nuevo" } } }
+            ]
+          },
+          {
+            "value": "Llevar Monkits a escuelas / franquicia",
+            "params": [
+              { "handler": "action", "params": { "name": "set_custom_fields", "params": { "type": 2, "custom_fields_id": "@field:MK_TIPO_CLIENTE", "value": "FRANQUICIA" } } },
+              { "handler": "action", "params": { "name": "set_custom_fields", "params": { "type": 2, "custom_fields_id": "@field:MK_ESTADO_COMERCIAL", "value": "NUEVO" } } },
+              { "handler": "action", "params": { "name": "set_tag", "params": { "type": 2, "value": "FRANQUICIA" } } },
+              { "handler": "action", "params": { "name": "change_status", "params": { "value": "@stage:franquicia/nuevo" } } }
+            ]
+          },
+          {
+            "value": "Inscribirme a un taller o curso",
+            "params": [
+              { "handler": "action", "params": { "name": "set_custom_fields", "params": { "type": 2, "custom_fields_id": "@field:MK_TIPO_CLIENTE", "value": "TALLER" } } },
+              { "handler": "action", "params": { "name": "set_custom_fields", "params": { "type": 2, "custom_fields_id": "@field:MK_ESTADO_COMERCIAL", "value": "NUEVO" } } },
+              { "handler": "action", "params": { "name": "set_tag", "params": { "type": 2, "value": "TALLER" } } },
+              { "handler": "action", "params": { "name": "change_status", "params": { "value": "@stage:talleres/interesado" } } }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "finish": [
+      { "handler": "action", "params": { "name": "unset_tag", "params": { "type": 2, "value": "BOT_ATENDIENDO" } } },
+      { "handler": "stop", "params": { "action": "talk-close" } }
+    ]
+  }
+]

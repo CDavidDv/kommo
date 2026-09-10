@@ -18,8 +18,8 @@ type Logger = (line: string) => void;
  * NEVER touches leads/contacts/companies data. Idempotent: safe to re-run.
  */
 export interface ApplyOptions {
-  /** Re-assign already-created fields to their Monkits group by delete + recreate. */
-  regroupFields?: boolean;
+  /** Recreate an existing (empty) field when its group or enum list drifted from config. */
+  refreshFields?: boolean;
 }
 
 export async function applyConfig(
@@ -177,25 +177,31 @@ export async function applyConfig(
         const gid = f.group ? groupId.get(`${e}:${f.group}`) : undefined;
         const currentGid = (exists as { group_id?: unknown }).group_id;
         const wrongGroup = gid !== undefined && String(currentGid ?? "") !== String(gid);
-        if (wrongGroup && opts.regroupFields && f.enabled) {
-          // Kommo rejects both PATCH /custom_fields/{id} and the batch PATCH for a
-          // group_id change. Only reliable path: delete the (empty) field, recreate
-          // it inside the group. Safe here — the account has no leads yet.
-          await step(`regroup field ${e}: ${f.name} (delete + recreate)`, async () => {
+        const liveEnums = ((exists as { enums?: Array<{ value: string }> }).enums ?? []).map((x) =>
+          norm(x.value),
+        );
+        const enumDrift =
+          !!f.enums?.length &&
+          (f.enums.length !== liveEnums.length ||
+            f.enums.some((v) => !liveEnums.includes(norm(v))));
+        const drifted = wrongGroup || enumDrift;
+        if (drifted && opts.refreshFields && f.enabled) {
+          // Kommo rejects PATCH for both group_id and enum changes on an existing
+          // field. Only reliable path: delete the (empty) field, recreate it.
+          // Safe while the account has no leads.
+          const why = [wrongGroup && "group", enumDrift && "enums"].filter(Boolean).join("+");
+          await step(`refresh field ${e}: ${f.name} (${why}, delete + recreate)`, async () => {
             await client.delete(`/${e}/custom_fields/${exists.id}`);
-            const body: Record<string, unknown> = {
-              type: f.type,
-              name: f.name,
-              code: f.code,
-              group_id: gid,
-            };
+            const body: Record<string, unknown> = { type: f.type, name: f.name, code: f.code };
+            if (gid !== undefined) body.group_id = gid;
             if (f.enums?.length) body.enums = f.enums.map((v, i) => ({ value: v, sort: (i + 1) * 10 }));
             await client.post(`/${e}/custom_fields`, [body]);
-            res.updated.push(`field ${e}: ${f.name} (regrouped)`);
-            log(`  ~ field ${e}: ${f.name} → recreated in group ${f.group}`);
+            res.updated.push(`field ${e}: ${f.name} (refreshed: ${why})`);
+            log(`  ~ field ${e}: ${f.name} → recreated (${why})`);
           });
-        } else if (wrongGroup) {
-          res.skipped.push(`field ${e}: ${f.name} (group pending — run with --regroup-fields)`);
+        } else if (drifted) {
+          const why = [wrongGroup && "group", enumDrift && "enums"].filter(Boolean).join("+");
+          res.skipped.push(`field ${e}: ${f.name} (${why} pending — run with --refresh-fields)`);
         } else {
           res.skipped.push(`field ${e}: ${f.name}`);
         }

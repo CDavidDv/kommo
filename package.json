@@ -11,6 +11,7 @@
     "verify": "tsx src/scripts/verify.ts",
     "audit": "tsx src/scripts/audit.ts",
     "install:monkits": "tsx src/scripts/install.ts",
+    "bots:compile": "tsx src/scripts/bots.ts",
     "test": "vitest run"
   },
   "dependencies": {

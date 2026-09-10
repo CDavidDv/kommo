@@ -93,16 +93,19 @@ function planPipeline(cfg: PipelineCfg, live: LiveState, actions: Action[]) {
       op: "create",
       kind: "pipeline",
       label: cfg.name,
-      detail: `+ ${newStages.length} stages (142/143 auto-created, then renamed)`,
+      detail: `+ ${newStages.length} stages (142/143 kept with default names)`,
     });
     for (const s of cfg.stages) {
-      actions.push({
-        op: s.system ? "update" : "create",
-        kind: "stage",
-        label: `${cfg.name} › ${s.name}`,
-        detail: s.system ? `rename system stage ${s.system}` : `sort ${s.sort}`,
-        risky: !!s.system,
-      });
+      actions.push(
+        s.system
+          ? {
+              op: "manual",
+              kind: "stage",
+              label: `${cfg.name} › ${s.name}`,
+              detail: `system stage ${s.system} — rename in Kommo UI`,
+            }
+          : { op: "create", kind: "stage", label: `${cfg.name} › ${s.name}`, detail: `sort ${s.sort}` },
+      );
     }
     return;
   }
@@ -209,13 +212,17 @@ export async function buildPlan(client: KommoClient, config: MonkitsConfig): Pro
           ? live.groups[e].find((g) => norm(g.name) === norm(groupCfg.name))
           : undefined;
         const needsGroup = !!liveGroup && String(liveGid ?? "") !== String(liveGroup.id);
+        const needsEnums = missingEnums.length > 0;
+        const why = [needsGroup && "group", needsEnums && `enums +${missingEnums.join("/")}`]
+          .filter(Boolean)
+          .join(", ");
         actions.push({
-          op: needsGroup ? "update" : "noop",
+          op: needsGroup || needsEnums ? "update" : "noop",
           kind: "field",
           label: `${e}: ${f.name}`,
-          detail: needsGroup
-            ? `move to group "${groupCfg!.name}"`
-            : `exists (id ${liveF.id})${missingEnums.length ? ` — missing enums: ${missingEnums.join(", ")}` : ""}`,
+          detail: why
+            ? `${why} — needs --refresh-fields (delete + recreate)`
+            : `exists (id ${liveF.id})`,
         });
       } else if (!f.enabled) {
         actions.push({ op: "noop", kind: "field", label: `${e}: ${f.name}`, detail: "disabled in config — skipped" });

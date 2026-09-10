@@ -83,6 +83,23 @@
         { "key": "won", "system": 142, "name": "Franquicia activa" },
         { "key": "lost", "system": 143, "name": "Descartado" }
       ]
+    },
+    {
+      "key": "talleres",
+      "name": "P5 · Talleres y cursos",
+      "is_main": false,
+      "is_unsorted_on": false,
+      "sort": 60,
+      "stages": [
+        { "key": "interesado", "name": "Interesado", "sort": 20, "color": "#ebffb1" },
+        { "key": "info_enviada", "name": "Info enviada", "sort": 30, "color": "#deff81" },
+        { "key": "datos_inscripcion", "name": "Datos de inscripción", "sort": 40, "color": "#87f2c0" },
+        { "key": "asesor_confirma", "name": "Asesor confirma cupo/precio", "sort": 50, "color": "#98cbff" },
+        { "key": "pago_pendiente", "name": "Pago pendiente", "sort": 60, "color": "#ffdc7f" },
+        { "key": "inscrito", "name": "Inscrito", "sort": 70, "color": "#87f2c0" },
+        { "key": "won", "system": 142, "name": "Asistió / completado" },
+        { "key": "lost", "system": 143, "name": "No inscrito" }
+      ]
     }
   ]
 }

@@ -6,6 +6,7 @@
       { "name": "MAYOREO", "color": "FFCE5A" },
       { "name": "DISTRIBUIDOR", "color": "C7DB8C" },
       { "name": "FRANQUICIA", "color": "D1A4DC" },
+      { "name": "TALLER", "color": "90CDB0" },
       { "name": "NUEVO_LEAD", "color": "EBEBEB" },
       { "name": "BOT_ATENDIENDO", "color": "86C0FC" },
       { "name": "ASESOR_REQUERIDO", "color": "FF8F92" },

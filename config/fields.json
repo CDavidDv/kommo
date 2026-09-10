@@ -4,6 +4,7 @@
     "leads": [
       { "key": "mk_clasificacion", "name": "Monkits · Clasificación", "sort": 500 },
       { "key": "mk_datos", "name": "Monkits · Datos comerciales", "sort": 510 },
+      { "key": "mk_talleres", "name": "Monkits · Talleres", "sort": 515 },
       { "key": "mk_seguimiento", "name": "Monkits · Seguimiento", "sort": 520 }
     ]
   },
@@ -11,7 +12,7 @@
     "leads": [
       {
         "code": "MK_TIPO_CLIENTE", "name": "Tipo de cliente", "type": "select", "group": "mk_clasificacion", "enabled": true,
-        "enums": ["PUBLICO", "MAYOREO", "DISTRIBUIDOR", "FRANQUICIA"]
+        "enums": ["PUBLICO", "MAYOREO", "DISTRIBUIDOR", "FRANQUICIA", "TALLER"]
       },
       {
         "code": "MK_FUENTE_LEAD", "name": "Fuente del lead", "type": "select", "group": "mk_clasificacion", "enabled": true,
@@ -49,6 +50,14 @@
       },
       { "code": "MK_INTERES_ESCUELAS", "name": "Interés en llevar Monkits a escuelas", "type": "checkbox", "group": "mk_datos", "enabled": true },
       { "code": "MK_INTERES_TALLERES", "name": "Interés en impartir talleres", "type": "checkbox", "group": "mk_datos", "enabled": true },
+
+      { "code": "MK_TALLER_DETALLE", "name": "Inscripción: taller/curso, fechas y edades", "type": "textarea", "group": "mk_talleres", "enabled": true },
+      { "code": "MK_NUM_PARTICIPANTES", "name": "Nº de participantes", "type": "numeric", "group": "mk_talleres", "enabled": true },
+      {
+        "code": "MK_MODALIDAD", "name": "Modalidad del taller", "type": "select", "group": "mk_talleres", "enabled": true,
+        "enums": ["PRESENCIAL_SEDE", "EN_ESCUELA", "A_DOMICILIO", "EN_LINEA"]
+      },
+
       { "code": "MK_PRESUPUESTO_APROX", "name": "Presupuesto aproximado (MXN)", "type": "numeric", "group": "mk_datos", "enabled": false },
       { "code": "MK_PROXIMO_SEGUIMIENTO", "name": "Próximo seguimiento", "type": "date", "group": "mk_seguimiento", "enabled": false },
       { "code": "MK_ULTIMO_CONTACTO", "name": "Último contacto", "type": "date", "group": "mk_seguimiento", "enabled": false }

@@ -16,7 +16,9 @@
     { "pipeline": "distribuidor", "stage": "nuevo", "actions": ["Lanzar Salesbot 'Monkits · Flujo Distribuidor'"] },
     { "pipeline": "distribuidor", "stage": "asesor_asignado", "actions": ["Detener Salesbots", "Crear tarea de evaluación", "Asignar responsable"] },
     { "pipeline": "franquicia", "stage": "nuevo", "actions": ["Lanzar Salesbot 'Monkits · Flujo Franquicia'"] },
-    { "pipeline": "franquicia", "stage": "datos_recopilados", "actions": ["Detener Salesbots", "Crear tarea 'Contactar hoy' +2h", "Asignar asesor especializado"] }
+    { "pipeline": "franquicia", "stage": "datos_recopilados", "actions": ["Detener Salesbots", "Crear tarea 'Contactar hoy' +2h", "Asignar asesor especializado"] },
+    { "pipeline": "talleres", "stage": "interesado", "actions": ["Lanzar Salesbot 'Monkits · Flujo Talleres'"] },
+    { "pipeline": "talleres", "stage": "datos_inscripcion", "actions": ["Detener Salesbots", "Crear tarea 'Confirmar cupo/precio y coordinar pago' +4h", "Asignar responsable"] }
   ],
   "global_rules": [
     "Salesbot en pausa cuando el operador envía un mensaje manual (config del propio bot).",
