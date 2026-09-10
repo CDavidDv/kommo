@@ -155,20 +155,17 @@ export async function applyConfig(
 
   // ---- Custom fields ----
   for (const e of ENTITIES) {
+    const regroup: Array<{ id: number; group_id: string | number; name: string }> = [];
+
     for (const f of config.fields[e] ?? []) {
       const exists =
         (f.code && live.fields[e].find((x) => (x.code ?? "").toUpperCase() === f.code.toUpperCase())) ||
         live.fields[e].find((x) => norm(x.name) === norm(f.name));
       if (exists) {
-        // Field is there; fix its group assignment if config expects one and it differs.
         const gid = f.group ? groupId.get(`${e}:${f.group}`) : undefined;
         const currentGid = (exists as { group_id?: unknown }).group_id;
         if (gid !== undefined && String(currentGid ?? "") !== String(gid)) {
-          await step(`move field ${e}: ${f.name} → group ${f.group}`, async () => {
-            await client.patch(`/${e}/custom_fields/${exists.id}`, { group_id: gid });
-            res.updated.push(`field ${e}: ${f.name} (group)`);
-            log(`  ~ field ${e}: ${f.name} → group ${f.group}`);
-          });
+          regroup.push({ id: exists.id, group_id: gid, name: f.name });
         } else {
           res.skipped.push(`field ${e}: ${f.name}`);
         }
@@ -187,6 +184,21 @@ export async function applyConfig(
         await client.post(`/${e}/custom_fields`, [body]);
         res.created.push(`field ${e}: ${f.name}`);
         log(`  + field ${e}: ${f.name}`);
+      });
+    }
+
+    // Move already-existing fields into their Monkits group via the BATCH endpoint
+    // (the single-field PATCH /custom_fields/{id} rejects a group_id-only body with 400).
+    if (regroup.length) {
+      await step(`move ${regroup.length} ${e} fields into groups`, async () => {
+        await client.patch(
+          `/${e}/custom_fields`,
+          regroup.map((r) => ({ id: r.id, group_id: r.group_id })),
+        );
+        for (const r of regroup) {
+          res.updated.push(`field ${e}: ${r.name} (group)`);
+          log(`  ~ field ${e}: ${r.name} → group`);
+        }
       });
     }
   }
