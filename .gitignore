@@ -1,0 +1,27 @@
+# Secrets — NEVER commit
+.env
+.env.*
+!.env.example
+claves.txt
+*.token
+*.secret
+secrets/
+
+# Node
+node_modules/
+dist/
+build/
+coverage/
+*.log
+npm-debug.log*
+
+# Audit output (may contain account data)
+docs/current-account.json
+docs/current-account.md
+docs/audit/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

@@ -1,0 +1,30 @@
+{
+  "key": "welcome",
+  "manual_required": true,
+  "name": "Monkits · Bienvenida y triaje",
+  "attach_to": { "pipeline": "recepcion", "stage": "sin_clasificar" },
+  "purpose": "Responder de inmediato, preguntar qué busca el cliente, clasificar y mover el lead al pipeline correcto.",
+  "on_classify": {
+    "set_field": "MK_TIPO_CLIENTE",
+    "add_tag_by_type": true,
+    "move_to": {
+      "PUBLICO": { "pipeline": "publico", "stage": "nuevo" },
+      "MAYOREO": { "pipeline": "mayoreo", "stage": "nuevo" },
+      "DISTRIBUIDOR": { "pipeline": "distribuidor", "stage": "nuevo" },
+      "FRANQUICIA": { "pipeline": "franquicia", "stage": "nuevo" }
+    }
+  },
+  "message": {
+    "greeting": "Hola, gracias por contactar a Monkits. Para ayudarte mejor, ¿qué estás buscando?",
+    "options": [
+      { "value": "PUBLICO", "label": "Comprar kits" },
+      { "value": "MAYOREO", "label": "Comprar por mayoreo" },
+      { "value": "DISTRIBUIDOR", "label": "Distribuir Monkits" },
+      { "value": "FRANQUICIA", "label": "Llevar Monkits a escuelas / franquicia" }
+    ],
+    "no_answer_followup_hours": 3,
+    "fallback_to_human_after": 2
+  },
+  "scenario": null,
+  "note": "Kommo Salesbot NO tiene API de creación. El JSON de escenario se pega en Settings > Herramientas de comunicación > Salesbots. Este archivo es la especificación; el escenario Kommo se genera en FASE 7."
+}

@@ -1,0 +1,57 @@
+{
+  "_doc": "FASE 5. Campos personalizados de lead para Monkits. Idempotencia: se hace match contra los existentes por 'code' (y si no, por 'name', case-insensitive). 'enabled': false = no se crea todavía (opcional). NO se define VENDEDOR_ASIGNADO: se usa el 'responsible user' nativo de Kommo (CLAUDE.md §10, evitar duplicar). Cuenta actual: 21/40 campos de lead — margen para ~19 nuevos.",
+  "groups": {
+    "leads": [
+      { "key": "mk_clasificacion", "name": "Monkits · Clasificación", "sort": 500 },
+      { "key": "mk_datos", "name": "Monkits · Datos comerciales", "sort": 510 },
+      { "key": "mk_seguimiento", "name": "Monkits · Seguimiento", "sort": 520 }
+    ]
+  },
+  "fields": {
+    "leads": [
+      {
+        "code": "MK_TIPO_CLIENTE", "name": "Tipo de cliente", "type": "select", "group": "mk_clasificacion", "enabled": true,
+        "enums": ["PUBLICO", "MAYOREO", "DISTRIBUIDOR", "FRANQUICIA"]
+      },
+      {
+        "code": "MK_FUENTE_LEAD", "name": "Fuente del lead", "type": "select", "group": "mk_clasificacion", "enabled": true,
+        "enums": ["WHATSAPP", "FACEBOOK", "INSTAGRAM", "TIKTOK", "WEBSITE", "FORMULARIO", "REFERIDO", "OTRO"]
+      },
+      {
+        "code": "MK_ESTADO_COMERCIAL", "name": "Estado comercial", "type": "select", "group": "mk_clasificacion", "enabled": true,
+        "enums": ["NUEVO", "EN_CONTACTO", "INFO_ENVIADA", "DATOS_RECOPILADOS", "COTIZANDO", "NEGOCIANDO", "GANADO", "PERDIDO", "EN_PAUSA"]
+      },
+      { "code": "MK_CANTIDAD_KITS", "name": "Cantidad estimada de kits", "type": "numeric", "group": "mk_datos", "enabled": true },
+      { "code": "MK_NOMBRE_ORG", "name": "Escuela / empresa / negocio", "type": "text", "group": "mk_datos", "enabled": true },
+      { "code": "MK_CIUDAD", "name": "Ciudad", "type": "text", "group": "mk_datos", "enabled": true },
+      {
+        "code": "MK_ESTADO_MX", "name": "Estado", "type": "select", "group": "mk_datos", "enabled": true,
+        "enums": [
+          "Aguascalientes", "Baja California", "Baja California Sur", "Campeche", "Chiapas", "Chihuahua",
+          "Ciudad de México", "Coahuila", "Colima", "Durango", "Estado de México", "Guanajuato", "Guerrero",
+          "Hidalgo", "Jalisco", "Michoacán", "Morelos", "Nayarit", "Nuevo León", "Oaxaca", "Puebla",
+          "Querétaro", "Quintana Roo", "San Luis Potosí", "Sinaloa", "Sonora", "Tabasco", "Tamaulipas",
+          "Tlaxcala", "Veracruz", "Yucatán", "Zacatecas", "Otro / Extranjero"
+        ]
+      },
+      {
+        "code": "MK_TIPO_INSTITUCION", "name": "Tipo de institución", "type": "select", "group": "mk_datos", "enabled": true,
+        "enums": ["ESCUELA_PUBLICA", "ESCUELA_PRIVADA", "EMPRESA", "NEGOCIO_RETAIL", "PARTICULAR", "ONG", "OTRO"]
+      },
+      { "code": "MK_INTERES", "name": "Interés / necesidad específica", "type": "textarea", "group": "mk_datos", "enabled": true },
+      {
+        "code": "MK_CANALES_VENTA", "name": "Canales de venta (distribuidor)", "type": "multiselect", "group": "mk_datos", "enabled": true,
+        "enums": ["TIENDA_FISICA", "TIENDA_ONLINE", "MARKETPLACE", "REDES_SOCIALES", "MAYOREO_B2B", "EVENTOS", "OTRO"]
+      },
+      {
+        "code": "MK_EXPERIENCIA_COMERCIAL", "name": "Experiencia comercial", "type": "select", "group": "mk_datos", "enabled": true,
+        "enums": ["NINGUNA", "POCA", "MEDIA", "ALTA"]
+      },
+      { "code": "MK_INTERES_ESCUELAS", "name": "Interés en llevar Monkits a escuelas", "type": "checkbox", "group": "mk_datos", "enabled": true },
+      { "code": "MK_INTERES_TALLERES", "name": "Interés en impartir talleres", "type": "checkbox", "group": "mk_datos", "enabled": true },
+      { "code": "MK_PRESUPUESTO_APROX", "name": "Presupuesto aproximado (MXN)", "type": "numeric", "group": "mk_datos", "enabled": false },
+      { "code": "MK_PROXIMO_SEGUIMIENTO", "name": "Próximo seguimiento", "type": "date", "group": "mk_seguimiento", "enabled": false },
+      { "code": "MK_ULTIMO_CONTACTO", "name": "Último contacto", "type": "date", "group": "mk_seguimiento", "enabled": false }
+    ]
+  }
+}

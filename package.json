@@ -1,0 +1,25 @@
+{
+  "name": "kommo-monkits",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Configurador idempotente del CRM de Monkits sobre Kommo (API oficial v4)",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "verify": "tsx src/scripts/verify.ts",
+    "audit": "tsx src/scripts/audit.ts",
+    "install:monkits": "tsx src/scripts/install.ts",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3",
+    "vitest": "^5.0.0",
+    "@types/node": "^22.10.1"
+  }
+}

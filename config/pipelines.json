@@ -1,0 +1,88 @@
+{
+  "_doc": "Arquitectura FASE 4 (aprobada 2026-09-10): 5 pipelines. 'reuse' reutiliza recursos existentes por id (idempotente). Stages con 'system' 142/143 son de sistema: se intenta renombrar pero Kommo puede rechazarlo (is_editable=false) — no es un error fatal. Colores solo de la paleta permitida (docs/API-CAPABILITIES).",
+  "pipelines": [
+    {
+      "key": "recepcion",
+      "name": "P0 · Recepción & Triaje",
+      "is_main": true,
+      "is_unsorted_on": false,
+      "sort": 10,
+      "stages": [
+        { "key": "sin_clasificar", "name": "Sin clasificar", "sort": 10, "color": "#fffeb2" },
+        { "key": "esperando_eleccion", "name": "Esperando elección", "sort": 20, "color": "#fffd7f" },
+        { "key": "reenganche", "name": "Reenganche", "sort": 30, "color": "#ffce5a" },
+        { "key": "won", "system": 142, "name": "Clasificado y movido" },
+        { "key": "lost", "system": 143, "name": "Descartado / Spam / inválido" }
+      ]
+    },
+    {
+      "key": "publico",
+      "name": "P1 · Público",
+      "reuse": { "pipeline_id": 14436983 },
+      "is_main": false,
+      "is_unsorted_on": false,
+      "sort": 20,
+      "stages": [
+        { "key": "nuevo", "reuse_status_id": 111513623, "name": "Nuevo" },
+        { "key": "info_enviada", "reuse_status_id": 111513627, "name": "Info enviada" },
+        { "key": "tienda_enviada", "reuse_status_id": 111513631, "name": "Tienda enviada" },
+        { "key": "en_seguimiento", "reuse_status_id": 111513635, "name": "En seguimiento" },
+        { "key": "conversacion_humana", "reuse_status_id": 111513639, "name": "En conversación (humano)" },
+        { "key": "compra_confirmada", "reuse_status_id": 111513643, "name": "Compra confirmada" },
+        { "key": "won", "system": 142, "name": "Ganado – compra" },
+        { "key": "lost", "system": 143, "name": "Perdido" }
+      ]
+    },
+    {
+      "key": "mayoreo",
+      "name": "P2 · Mayoreo",
+      "is_main": false,
+      "is_unsorted_on": false,
+      "sort": 30,
+      "stages": [
+        { "key": "nuevo", "name": "Nuevo", "sort": 10, "color": "#d6eaff" },
+        { "key": "calificando", "name": "Calificando", "sort": 20, "color": "#c1e0ff" },
+        { "key": "datos_completos", "name": "Datos completos", "sort": 30, "color": "#98cbff" },
+        { "key": "cotizacion_solicitada", "name": "Cotización solicitada", "sort": 40, "color": "#ffeab2" },
+        { "key": "cotizacion_enviada", "name": "Cotización enviada", "sort": 50, "color": "#ffdc7f" },
+        { "key": "negociacion", "name": "Negociación", "sort": 60, "color": "#ffce5a" },
+        { "key": "won", "system": 142, "name": "Ganado" },
+        { "key": "lost", "system": 143, "name": "Perdido" }
+      ]
+    },
+    {
+      "key": "distribuidor",
+      "name": "P3 · Distribuidor",
+      "is_main": false,
+      "is_unsorted_on": false,
+      "sort": 40,
+      "stages": [
+        { "key": "nuevo", "name": "Nuevo", "sort": 10, "color": "#ebffb1" },
+        { "key": "info_inicial", "name": "Información inicial", "sort": 20, "color": "#deff81" },
+        { "key": "datos_negocio", "name": "Datos del negocio", "sort": 30, "color": "#87f2c0" },
+        { "key": "evaluacion", "name": "Evaluación", "sort": 40, "color": "#c1e0ff" },
+        { "key": "asesor_asignado", "name": "Asesor asignado", "sort": 50, "color": "#98cbff" },
+        { "key": "negociacion", "name": "Negociación", "sort": 60, "color": "#ffce5a" },
+        { "key": "won", "system": 142, "name": "Distribuidor activo" },
+        { "key": "lost", "system": 143, "name": "Descartado" }
+      ]
+    },
+    {
+      "key": "franquicia",
+      "name": "P4 · Franquicia",
+      "is_main": false,
+      "is_unsorted_on": false,
+      "sort": 50,
+      "stages": [
+        { "key": "nuevo", "name": "Nuevo", "sort": 10, "color": "#f9deff" },
+        { "key": "interes_identificado", "name": "Interés identificado", "sort": 20, "color": "#f3beff" },
+        { "key": "datos_recopilados", "name": "Datos recopilados", "sort": 30, "color": "#ccc8f9" },
+        { "key": "presentacion", "name": "Presentación", "sort": 40, "color": "#d6eaff" },
+        { "key": "asesor_especializado", "name": "Asesor especializado", "sort": 50, "color": "#98cbff" },
+        { "key": "negociacion", "name": "Negociación", "sort": 60, "color": "#ffce5a" },
+        { "key": "won", "system": 142, "name": "Franquicia activa" },
+        { "key": "lost", "system": 143, "name": "Descartado" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "key": "public",
+  "manual_required": true,
+  "name": "Monkits · Flujo Público",
+  "attach_to": { "pipeline": "publico", "stage": "nuevo" },
+  "purpose": "Conversión rápida. Info básica + link de tienda. Seguimiento automático si no compra. No consumir tiempo de vendedor salvo duda.",
+  "steps": [
+    { "do": "message", "text": "¡Perfecto! Te comparto la info de nuestros kits y el enlace para comprar." },
+    { "do": "send", "var": "MONKITS_STORE_URL" },
+    { "do": "set_field", "field": "MK_ESTADO_COMERCIAL", "value": "INFO_ENVIADA" },
+    { "do": "set_stage", "stage": "tienda_enviada" },
+    { "do": "add_tag", "tag": "SEGUIMIENTO" },
+    { "do": "wait_hours", "hours": 24 },
+    { "do": "message", "text": "¿Pudiste ver la tienda? ¿Te ayudo con alguna duda o con tu pedido?" },
+    { "do": "set_stage", "stage": "en_seguimiento" },
+    { "do": "wait_hours", "hours": 72 },
+    { "do": "message", "text": "Seguimos por aquí si quieres retomar tu compra 🙂" },
+    { "do": "handoff_if_reply", "to_stage": "conversacion_humana", "tag": "ASESOR_REQUERIDO" }
+  ],
+  "escalate_to_human_when": ["cliente pide hablar con persona", "duda fuera del flujo", "intención de compra alta"],
+  "scenario": null,
+  "note": "URLs comerciales como variables de entorno (MONKITS_STORE_URL / MONKITS_WEBSITE_URL). Escenario Kommo en FASE 8."
+}

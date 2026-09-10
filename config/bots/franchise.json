@@ -1,0 +1,27 @@
+{
+  "key": "franchise",
+  "manual_required": true,
+  "name": "Monkits · Flujo Franquicia",
+  "attach_to": { "pipeline": "franquicia", "stage": "nuevo" },
+  "purpose": "Lead de alto valor. Identificar interés, explicar brevemente el concepto, recopilar datos básicos, crear tarea y pasar rápido a asesor especializado.",
+  "collect": [
+    { "field": "MK_NOMBRE_ORG", "ask": "¿Representas a una persona, empresa u organización? ¿Nombre?" },
+    { "field": "MK_CIUDAD", "ask": "¿En qué ciudad / zona te interesa operar?" },
+    { "field": "MK_ESTADO_MX", "ask": "¿Estado?" },
+    { "field": "MK_INTERES_ESCUELAS", "ask": "¿Te interesa llevar Monkits a escuelas?" },
+    { "field": "MK_INTERES_TALLERES", "ask": "¿Te interesa impartir talleres de robótica?" },
+    { "field": "MK_EXPERIENCIA_COMERCIAL", "ask": "¿Tienes experiencia en educación o en emprender?" }
+  ],
+  "steps": [
+    { "do": "message", "text": "El modelo de franquicia Monkits te permite llevar productos y talleres de robótica a escuelas bajo el concepto y nombre de Monkits, según las condiciones que la empresa define." },
+    { "do": "set_field", "field": "MK_ESTADO_COMERCIAL", "value": "DATOS_RECOPILADOS" },
+    { "do": "set_stage", "stage": "datos_recopilados" },
+    { "do": "add_tag", "tag": "ASESOR_REQUERIDO" },
+    { "do": "create_task", "text": "FRANQUICIA (alto valor): contactar {lead} hoy", "due_hours": 2 },
+    { "do": "assign_responsible", "strategy": "default_user" },
+    { "do": "message", "text": "¡Gracias! Un asesor especializado te contactará muy pronto para presentarte el modelo a detalle." },
+    { "do": "stop_bot" }
+  ],
+  "scenario": null,
+  "note": "NO negociar precio, regalías, territorio, contratos, exclusividad ni condiciones legales. Escenario Kommo en FASE 11."
+}

@@ -1,0 +1,25 @@
+{
+  "key": "wholesale",
+  "manual_required": true,
+  "name": "Monkits · Flujo Mayoreo",
+  "attach_to": { "pipeline": "mayoreo", "stage": "nuevo" },
+  "purpose": "Calificar y preparar cotización. El bot NO negocia precios. Recopila datos y entrega al vendedor.",
+  "collect": [
+    { "field": "MK_CANTIDAD_KITS", "ask": "¿Aproximadamente cuántos kits necesitas?" },
+    { "field": "MK_INTERES", "ask": "¿Para qué los vas a usar?" },
+    { "field": "MK_CIUDAD", "ask": "¿En qué ciudad estás?" },
+    { "field": "MK_ESTADO_MX", "ask": "¿Y en qué estado?" },
+    { "field": "MK_NOMBRE_ORG", "ask": "¿Nombre de la escuela / empresa / negocio?" }
+  ],
+  "steps": [
+    { "do": "set_field", "field": "MK_ESTADO_COMERCIAL", "value": "DATOS_RECOPILADOS" },
+    { "do": "set_stage", "stage": "datos_completos" },
+    { "do": "add_tag", "tag": "ASESOR_REQUERIDO" },
+    { "do": "create_task", "text": "Mayoreo: preparar cotización para {lead}", "due_hours": 4 },
+    { "do": "assign_responsible", "strategy": "default_user" },
+    { "do": "message", "text": "¡Gracias! Un asesor te preparará una cotización a la medida y te contactará pronto." },
+    { "do": "stop_bot" }
+  ],
+  "scenario": null,
+  "note": "Detener respuestas automáticas al pasar a atención humana. Escenario Kommo en FASE 9."
+}

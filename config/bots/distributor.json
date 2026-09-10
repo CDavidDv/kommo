@@ -1,0 +1,27 @@
+{
+  "key": "distributor",
+  "manual_required": true,
+  "name": "Monkits · Flujo Distribuidor",
+  "attach_to": { "pipeline": "distribuidor", "stage": "nuevo" },
+  "purpose": "Identificar socios comerciales potenciales. Recopilar datos del negocio y entregar a asesor.",
+  "collect": [
+    { "field": "MK_NOMBRE_ORG", "ask": "¿Cómo se llama tu negocio?" },
+    { "field": "MK_TIPO_INSTITUCION", "ask": "¿Qué tipo de negocio es?" },
+    { "field": "MK_CIUDAD", "ask": "¿En qué ciudad opera?" },
+    { "field": "MK_ESTADO_MX", "ask": "¿Estado?" },
+    { "field": "MK_CANALES_VENTA", "ask": "¿Por qué canales vendes? (tienda física, online, marketplace, redes...)" },
+    { "field": "MK_CANTIDAD_KITS", "ask": "¿Qué volumen aproximado manejarías?" },
+    { "field": "MK_EXPERIENCIA_COMERCIAL", "ask": "¿Tienes experiencia vendiendo productos similares?" }
+  ],
+  "steps": [
+    { "do": "set_field", "field": "MK_ESTADO_COMERCIAL", "value": "DATOS_RECOPILADOS" },
+    { "do": "set_stage", "stage": "datos_negocio" },
+    { "do": "add_tag", "tag": "ASESOR_REQUERIDO" },
+    { "do": "create_task", "text": "Distribuidor: evaluar y contactar {lead}", "due_hours": 8 },
+    { "do": "assign_responsible", "strategy": "default_user" },
+    { "do": "message", "text": "¡Gracias! Un asesor revisará la información y te contactará para hablar de condiciones de distribución." },
+    { "do": "stop_bot" }
+  ],
+  "scenario": null,
+  "note": "El bot NO negocia precio preferente ni condiciones. Escenario Kommo en FASE 10."
+}

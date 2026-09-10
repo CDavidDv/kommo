@@ -1,0 +1,27 @@
+{
+  "_doc": "FASE 12 + 14. Automatizaciones del Digital Pipeline. NO hay API pública de escritura para esto → todo es MANUAL_REQUIRED en la UI de Kommo (Leads > Automatizar). Este archivo es la especificación que el instalador imprimirá como checklist y que irá a docs/MANUAL-SETUP.md.",
+  "digital_pipeline": [
+    {
+      "pipeline": "recepcion", "stage": "sin_clasificar",
+      "actions": ["Lanzar Salesbot 'Monkits · Bienvenida y triaje'"]
+    },
+    {
+      "pipeline": "recepcion", "stage": "reenganche",
+      "actions": ["Crear tarea 'Revisar lead sin clasificar' +24h si no hay respuesta"]
+    },
+    { "pipeline": "publico", "stage": "nuevo", "actions": ["Lanzar Salesbot 'Monkits · Flujo Público'"] },
+    { "pipeline": "publico", "stage": "conversacion_humana", "actions": ["Detener todos los Salesbots", "Notificar al responsable"] },
+    { "pipeline": "mayoreo", "stage": "nuevo", "actions": ["Lanzar Salesbot 'Monkits · Flujo Mayoreo'"] },
+    { "pipeline": "mayoreo", "stage": "datos_completos", "actions": ["Detener Salesbots", "Crear tarea 'Preparar cotización' +4h", "Asignar responsable"] },
+    { "pipeline": "distribuidor", "stage": "nuevo", "actions": ["Lanzar Salesbot 'Monkits · Flujo Distribuidor'"] },
+    { "pipeline": "distribuidor", "stage": "asesor_asignado", "actions": ["Detener Salesbots", "Crear tarea de evaluación", "Asignar responsable"] },
+    { "pipeline": "franquicia", "stage": "nuevo", "actions": ["Lanzar Salesbot 'Monkits · Flujo Franquicia'"] },
+    { "pipeline": "franquicia", "stage": "datos_recopilados", "actions": ["Detener Salesbots", "Crear tarea 'Contactar hoy' +2h", "Asignar asesor especializado"] }
+  ],
+  "global_rules": [
+    "Salesbot en pausa cuando el operador envía un mensaje manual (config del propio bot).",
+    "Al mover un lead a etapa 'Ganado' de cualquier pipeline: añadir etiqueta VENTA, set MK_ESTADO_COMERCIAL=GANADO.",
+    "Al mover a 'Perdido/Descartado': quitar etiquetas de bot, pedir motivo de pérdida.",
+    "Seguimientos: nunca más de 1 mensaje automático cada 24h; máx 3 reintentos; respetar ventana de 24h de WhatsApp."
+  ]
+}
