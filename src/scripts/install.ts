@@ -22,6 +22,7 @@ const CONFIG_DIR = resolve(dirname(fileURLToPath(import.meta.url)), "../../confi
 const args = new Set(process.argv.slice(2));
 const APPLY = args.has("--apply");
 const YES = args.has("--yes");
+const REGROUP_FIELDS = args.has("--regroup-fields");
 
 const MARK: Record<Op, string> = { create: "+", update: "~", noop: "·", manual: "!" };
 
@@ -115,7 +116,8 @@ async function main() {
   }
 
   console.log("\nApplying...");
-  const result = await applyConfig(kommo, config);
+  if (REGROUP_FIELDS) console.log("(--regroup-fields: empty ungrouped fields will be deleted + recreated in their group)\n");
+  const result = await applyConfig(kommo, config, console.log, { regroupFields: REGROUP_FIELDS });
   console.log("\n─".repeat(30));
   console.log(`Created: ${result.created.length}  Updated: ${result.updated.length}  Skipped: ${result.skipped.length}  Failed: ${result.failed.length}`);
   if (result.failed.length) {

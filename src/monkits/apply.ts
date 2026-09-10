@@ -17,10 +17,16 @@ type Logger = (line: string) => void;
  * Executes the config against Kommo. Creates missing resources, renames reused ones.
  * NEVER touches leads/contacts/companies data. Idempotent: safe to re-run.
  */
+export interface ApplyOptions {
+  /** Re-assign already-created fields to their Monkits group by delete + recreate. */
+  regroupFields?: boolean;
+}
+
 export async function applyConfig(
   client: KommoClient,
   config: MonkitsConfig,
   log: Logger = console.log,
+  opts: ApplyOptions = {},
 ): Promise<ApplyResult> {
   const res: ApplyResult = { created: [], updated: [], skipped: [], failed: [] };
   const live = await fetchLiveState(client);
@@ -118,15 +124,23 @@ export async function applyConfig(
         continue;
       }
 
-      const sp: Record<string, unknown> = {};
-      if (norm(ls.name) !== norm(s.name)) sp.name = s.name;
-      if (s.sort !== undefined && (ls as { sort?: number }).sort !== s.sort) sp.sort = s.sort;
-      if (s.color && (ls as { color?: string }).color !== s.color) sp.color = s.color;
-      if (Object.keys(sp).length) {
+      // Kommo's stage PATCH is a full replace, not a partial update: sending only
+      // `name` wipes `sort`, sending only `sort` wipes `name`. Always send all three.
+      const liveColor = (ls as { color?: string }).color;
+      const liveSort = (ls as { sort?: number }).sort;
+      const wantColor = s.color ?? liveColor;
+      const needs =
+        norm(ls.name) !== norm(s.name) ||
+        (s.sort !== undefined && liveSort !== s.sort) ||
+        (s.color !== undefined && liveColor !== s.color);
+      if (needs) {
+        const body: Record<string, unknown> = { name: s.name };
+        if (s.sort !== undefined) body.sort = s.sort;
+        if (wantColor) body.color = wantColor;
         await step(`update stage "${ls.name}" → "${s.name}"`, async () => {
-          await client.patch(`/leads/pipelines/${pid}/statuses/${ls.id}`, sp);
-          res.updated.push(`stage ${p.name} › ${s.name} (${Object.keys(sp).join(", ")})`);
-          log(`  ~ stage ${p.name} › ${s.name} (${Object.keys(sp).join(", ")})`);
+          await client.patch(`/leads/pipelines/${pid}/statuses/${ls.id}`, body);
+          res.updated.push(`stage ${p.name} › ${s.name}`);
+          log(`  ~ stage ${p.name} › ${s.name} (name+sort+color)`);
         });
       } else {
         res.skipped.push(`stage ${p.name} › ${s.name}`);
@@ -155,8 +169,6 @@ export async function applyConfig(
 
   // ---- Custom fields ----
   for (const e of ENTITIES) {
-    const regroup: Array<{ id: number; group_id: string | number; name: string }> = [];
-
     for (const f of config.fields[e] ?? []) {
       const exists =
         (f.code && live.fields[e].find((x) => (x.code ?? "").toUpperCase() === f.code.toUpperCase())) ||
@@ -164,8 +176,26 @@ export async function applyConfig(
       if (exists) {
         const gid = f.group ? groupId.get(`${e}:${f.group}`) : undefined;
         const currentGid = (exists as { group_id?: unknown }).group_id;
-        if (gid !== undefined && String(currentGid ?? "") !== String(gid)) {
-          regroup.push({ id: exists.id, group_id: gid, name: f.name });
+        const wrongGroup = gid !== undefined && String(currentGid ?? "") !== String(gid);
+        if (wrongGroup && opts.regroupFields && f.enabled) {
+          // Kommo rejects both PATCH /custom_fields/{id} and the batch PATCH for a
+          // group_id change. Only reliable path: delete the (empty) field, recreate
+          // it inside the group. Safe here — the account has no leads yet.
+          await step(`regroup field ${e}: ${f.name} (delete + recreate)`, async () => {
+            await client.delete(`/${e}/custom_fields/${exists.id}`);
+            const body: Record<string, unknown> = {
+              type: f.type,
+              name: f.name,
+              code: f.code,
+              group_id: gid,
+            };
+            if (f.enums?.length) body.enums = f.enums.map((v, i) => ({ value: v, sort: (i + 1) * 10 }));
+            await client.post(`/${e}/custom_fields`, [body]);
+            res.updated.push(`field ${e}: ${f.name} (regrouped)`);
+            log(`  ~ field ${e}: ${f.name} → recreated in group ${f.group}`);
+          });
+        } else if (wrongGroup) {
+          res.skipped.push(`field ${e}: ${f.name} (group pending — run with --regroup-fields)`);
         } else {
           res.skipped.push(`field ${e}: ${f.name}`);
         }
@@ -184,21 +214,6 @@ export async function applyConfig(
         await client.post(`/${e}/custom_fields`, [body]);
         res.created.push(`field ${e}: ${f.name}`);
         log(`  + field ${e}: ${f.name}`);
-      });
-    }
-
-    // Move already-existing fields into their Monkits group via the BATCH endpoint
-    // (the single-field PATCH /custom_fields/{id} rejects a group_id-only body with 400).
-    if (regroup.length) {
-      await step(`move ${regroup.length} ${e} fields into groups`, async () => {
-        await client.patch(
-          `/${e}/custom_fields`,
-          regroup.map((r) => ({ id: r.id, group_id: r.group_id })),
-        );
-        for (const r of regroup) {
-          res.updated.push(`field ${e}: ${r.name} (group)`);
-          log(`  ~ field ${e}: ${r.name} → group`);
-        }
       });
     }
   }
