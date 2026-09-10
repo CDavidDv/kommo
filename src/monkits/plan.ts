@@ -138,10 +138,22 @@ function planPipeline(cfg: PipelineCfg, live: LiveState, actions: Action[]) {
   }
 
   for (const s of cfg.stages) {
-    let ls: LiveStatus | undefined;
-    if (s.system) ls = liveStatuses.find((x) => x.id === s.system);
-    else if (s.reuse_status_id) ls = liveStatuses.find((x) => x.id === s.reuse_status_id);
-    else ls = liveStatuses.find((x) => norm(x.name) === norm(s.name));
+    if (s.system) {
+      // 142/143 can't be renamed via API — informational only.
+      const ls = liveStatuses.find((x) => x.id === s.system);
+      const done = ls && norm(ls.name) === norm(s.name);
+      actions.push({
+        op: done ? "noop" : "manual",
+        kind: "stage",
+        label: `${cfg.name} › ${s.name}`,
+        detail: done ? "already set" : `system stage ${s.system} — rename in Kommo UI`,
+      });
+      continue;
+    }
+
+    const ls =
+      (s.reuse_status_id && liveStatuses.find((x) => x.id === s.reuse_status_id)) ||
+      liveStatuses.find((x) => norm(x.name) === norm(s.name));
 
     if (!ls) {
       actions.push({
@@ -152,14 +164,16 @@ function planPipeline(cfg: PipelineCfg, live: LiveState, actions: Action[]) {
       });
       continue;
     }
-    if (norm(ls.name) !== norm(s.name)) {
-      const locked = ls.is_editable === false;
+    const changes: string[] = [];
+    if (norm(ls.name) !== norm(s.name)) changes.push(`name (from "${ls.name}")`);
+    if (s.sort !== undefined && ls.sort !== s.sort) changes.push(`sort ${ls.sort}→${s.sort}`);
+    if (changes.length) {
       actions.push({
         op: "update",
         kind: "stage",
         label: `${cfg.name} › ${s.name}`,
-        detail: `rename from "${ls.name}" (id ${ls.id})${locked ? " — is_editable=false, Kommo may reject" : ""}`,
-        risky: locked,
+        detail: `${changes.join(", ")} (id ${ls.id})`,
+        risky: norm(ls.name) !== norm(s.name),
       });
     } else {
       actions.push({ op: "noop", kind: "stage", label: `${cfg.name} › ${s.name}`, detail: "already correct" });
@@ -189,11 +203,19 @@ export async function buildPlan(client: KommoClient, config: MonkitsConfig): Pro
       if (liveF) {
         const missingEnums =
           f.enums?.filter((v) => !(liveF.enums ?? []).some((le) => norm(le.value) === norm(v))) ?? [];
+        const liveGid = (liveF as { group_id?: unknown }).group_id;
+        const groupCfg = f.group ? config.groups[e]?.find((g) => g.key === f.group) : undefined;
+        const liveGroup = groupCfg
+          ? live.groups[e].find((g) => norm(g.name) === norm(groupCfg.name))
+          : undefined;
+        const needsGroup = !!liveGroup && String(liveGid ?? "") !== String(liveGroup.id);
         actions.push({
-          op: "noop",
+          op: needsGroup ? "update" : "noop",
           kind: "field",
           label: `${e}: ${f.name}`,
-          detail: `exists (id ${liveF.id})${missingEnums.length ? ` — missing enums: ${missingEnums.join(", ")}` : ""}`,
+          detail: needsGroup
+            ? `move to group "${groupCfg!.name}"`
+            : `exists (id ${liveF.id})${missingEnums.length ? ` — missing enums: ${missingEnums.join(", ")}` : ""}`,
         });
       } else if (!f.enabled) {
         actions.push({ op: "noop", kind: "field", label: `${e}: ${f.name}`, detail: "disabled in config — skipped" });

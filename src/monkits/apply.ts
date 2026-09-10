@@ -96,8 +96,14 @@ export async function applyConfig(
     }
 
     for (const s of p.stages) {
-      let ls =
-        (s.system && liveStatuses.find((x) => x.id === s.system)) ||
+      // System won/lost stages (142/143) cannot be renamed via API — Kommo rejects
+      // the PATCH with 400. Their names must be changed in the Kommo UI.
+      if (s.system) {
+        res.skipped.push(`stage ${p.name} › ${s.name} (system ${s.system} — rename in UI)`);
+        continue;
+      }
+
+      const ls =
         (s.reuse_status_id && liveStatuses.find((x) => x.id === s.reuse_status_id)) ||
         liveStatuses.find((x) => norm(x.name) === norm(s.name));
 
@@ -111,11 +117,16 @@ export async function applyConfig(
         });
         continue;
       }
-      if (norm(ls.name) !== norm(s.name)) {
-        await step(`rename stage "${ls.name}" → "${s.name}"`, async () => {
-          await client.patch(`/leads/pipelines/${pid}/statuses/${ls!.id}`, { name: s.name });
-          res.updated.push(`stage ${p.name} › ${s.name}`);
-          log(`  ~ stage ${p.name} › ${s.name}`);
+
+      const sp: Record<string, unknown> = {};
+      if (norm(ls.name) !== norm(s.name)) sp.name = s.name;
+      if (s.sort !== undefined && (ls as { sort?: number }).sort !== s.sort) sp.sort = s.sort;
+      if (s.color && (ls as { color?: string }).color !== s.color) sp.color = s.color;
+      if (Object.keys(sp).length) {
+        await step(`update stage "${ls.name}" → "${s.name}"`, async () => {
+          await client.patch(`/leads/pipelines/${pid}/statuses/${ls.id}`, sp);
+          res.updated.push(`stage ${p.name} › ${s.name} (${Object.keys(sp).join(", ")})`);
+          log(`  ~ stage ${p.name} › ${s.name} (${Object.keys(sp).join(", ")})`);
         });
       } else {
         res.skipped.push(`stage ${p.name} › ${s.name}`);
@@ -133,11 +144,11 @@ export async function applyConfig(
         continue;
       }
       await step(`create field-group ${e}: ${g.name}`, async () => {
-        const r = await client.post<any>(`/${e}/custom_fields/groups`, { name: g.name, sort: g.sort });
-        const id = r?._embedded?.custom_field_groups?.[0]?.id ?? r?.id;
+        const r = await client.post<any>(`/${e}/custom_fields/groups`, [{ name: g.name, sort: g.sort }]);
+        const id = r?._embedded?.custom_field_groups?.[0]?.id ?? r?._embedded?.["custom_field_groups"]?.[0]?.id ?? r?.id;
         if (id !== undefined) groupId.set(`${e}:${g.key}`, id);
         res.created.push(`field-group ${e}: ${g.name}`);
-        log(`  + field-group ${e}: ${g.name}`);
+        log(`  + field-group ${e}: ${g.name} (id ${id})`);
       });
     }
   }
@@ -149,7 +160,18 @@ export async function applyConfig(
         (f.code && live.fields[e].find((x) => (x.code ?? "").toUpperCase() === f.code.toUpperCase())) ||
         live.fields[e].find((x) => norm(x.name) === norm(f.name));
       if (exists) {
-        res.skipped.push(`field ${e}: ${f.name}`);
+        // Field is there; fix its group assignment if config expects one and it differs.
+        const gid = f.group ? groupId.get(`${e}:${f.group}`) : undefined;
+        const currentGid = (exists as { group_id?: unknown }).group_id;
+        if (gid !== undefined && String(currentGid ?? "") !== String(gid)) {
+          await step(`move field ${e}: ${f.name} → group ${f.group}`, async () => {
+            await client.patch(`/${e}/custom_fields/${exists.id}`, { group_id: gid });
+            res.updated.push(`field ${e}: ${f.name} (group)`);
+            log(`  ~ field ${e}: ${f.name} → group ${f.group}`);
+          });
+        } else {
+          res.skipped.push(`field ${e}: ${f.name}`);
+        }
         continue;
       }
       if (!f.enabled) {
